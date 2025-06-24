@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { Upload, ArrowRight, Zap, Shield, Globe } from 'lucide-react';
+import { Upload, ArrowRight, Zap, Shield, Globe, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function HeroSection() {
