@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { Upload, ArrowRight, Zap, Shield, Globe, Sparkles } from 'lucide-react';
+import { Upload, ArrowRight, Zap, Shield, Globe, Sparkles, Video, Camera } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function HeroSection() {
@@ -24,18 +24,18 @@ export function HeroSection() {
             {/* Badge */}
             <div className="inline-flex items-center rounded-full border bg-background/80 backdrop-blur-sm px-4 py-2 text-sm mb-8">
               <Zap className="mr-2 h-4 w-4 text-blue-500" />
-              <span className="font-medium">AI-Powered Background Removal</span>
+              <span className="font-medium">AI-Powered Media Background Removal</span>
             </div>
 
             {/* Heading */}
             <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl mb-6">
-              Remove backgrounds
+              Remove backgrounds from
               <br />
-              <span className="gradient-text">instantly</span> with AI
+              <span className="gradient-text">images & videos</span> instantly
             </h1>
             
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground sm:text-xl mb-10">
-              Professional-quality background removal in seconds. Perfect for e-commerce, marketing, and creative projects.
+              Professional-quality background removal for photos and videos using advanced AI. Perfect for content creators, marketers, and businesses. Replace backgrounds with custom images, colors, or other videos.
             </p>
 
             {/* Action Buttons */}
@@ -46,7 +46,7 @@ export function HeroSection() {
                 className="gradient-primary text-white hover:opacity-90 transition-all duration-200 text-lg px-8 py-6 group"
               >
                 <Upload className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                Upload Image
+                Upload Media
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               <Button variant="outline" size="lg" className="text-lg px-8 py-6 hover:bg-muted/50">
@@ -57,8 +57,8 @@ export function HeroSection() {
             {/* Features */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-2xl mx-auto mb-16">
               <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
-                <Zap className="h-4 w-4 text-green-500" />
-                <span>Lightning Fast</span>
+                <Camera className="h-4 w-4 text-green-500" />
+                <span>Images & Videos</span>
               </div>
               <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
                 <Shield className="h-4 w-4 text-blue-500" />
@@ -80,9 +80,12 @@ export function HeroSection() {
                     <div className="h-full w-full rounded-xl bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center">
                       <div className="text-center space-y-2">
                         <div className="w-16 h-16 mx-auto bg-muted-foreground/20 rounded-full flex items-center justify-center">
-                          <Upload className="w-8 h-8 text-muted-foreground" />
+                          <div className="flex space-x-1">
+                            <Camera className="w-6 h-6 text-muted-foreground" />
+                            <Video className="w-6 h-6 text-muted-foreground" />
+                          </div>
                         </div>
-                        <p className="text-sm text-muted-foreground font-medium">Original Image</p>
+                        <p className="text-sm text-muted-foreground font-medium">Original Media</p>
                       </div>
                     </div>
                   </div>

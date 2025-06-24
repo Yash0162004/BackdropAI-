@@ -2,41 +2,47 @@
 import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/Header';
-import { Upload, Download, ArrowLeft, Loader2, Image as ImageIcon, CheckCircle, X } from 'lucide-react';
+import { Upload, Download, ArrowLeft, Loader2, Image as ImageIcon, CheckCircle, X, Video, Play, Pause } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function UploadPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [originalImage, setOriginalImage] = useState<string | null>(null);
-  const [processedImage, setProcessedImage] = useState<string | null>(null);
+  const [originalFile, setOriginalFile] = useState<string | null>(null);
+  const [processedFile, setProcessedFile] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [fileName, setFileName] = useState<string>('');
+  const [fileType, setFileType] = useState<'image' | 'video' | null>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleFileSelect = useCallback((file: File) => {
-    if (file && file.type.startsWith('image/')) {
+    if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
       setFileName(file.name);
+      setFileType(file.type.startsWith('image/') ? 'image' : 'video');
       const reader = new FileReader();
       reader.onload = (e) => {
-        const imageUrl = e.target?.result as string;
-        setOriginalImage(imageUrl);
-        processImage(imageUrl);
+        const fileUrl = e.target?.result as string;
+        setOriginalFile(fileUrl);
+        processFile(fileUrl, file.type.startsWith('video/'));
       };
       reader.readAsDataURL(file);
     }
   }, []);
 
-  const processImage = async (imageUrl: string) => {
+  const processFile = async (fileUrl: string, isVideo: boolean) => {
     setIsProcessing(true);
-    setProcessedImage(null);
+    setProcessedFile(null);
     
     // Simulate AI processing with realistic delay
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // For videos, processing takes longer
+    const delay = isVideo ? 8000 : 3000;
+    await new Promise(resolve => setTimeout(resolve, delay));
     
-    // For demo purposes, we'll show the same image
+    // For demo purposes, we'll show the same file
     // In production, this would call your background removal API
-    setProcessedImage(imageUrl);
+    setProcessedFile(fileUrl);
     setIsProcessing(false);
   };
 
@@ -63,11 +69,12 @@ export default function UploadPage() {
     setDragOver(false);
   };
 
-  const downloadImage = () => {
-    if (processedImage) {
+  const downloadFile = () => {
+    if (processedFile) {
       const link = document.createElement('a');
-      link.href = processedImage;
-      link.download = `${fileName.split('.')[0]}-no-bg.png`;
+      link.href = processedFile;
+      const extension = fileType === 'video' ? 'mp4' : 'png';
+      link.download = `${fileName.split('.')[0]}-no-bg.${extension}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -75,10 +82,23 @@ export default function UploadPage() {
   };
 
   const resetUpload = () => {
-    setOriginalImage(null);
-    setProcessedImage(null);
+    setOriginalFile(null);
+    setProcessedFile(null);
     setIsProcessing(false);
     setFileName('');
+    setFileType(null);
+    setIsVideoPlaying(false);
+  };
+
+  const toggleVideoPlayback = () => {
+    if (videoRef.current) {
+      if (isVideoPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsVideoPlaying(!isVideoPlaying);
+    }
   };
 
   return (
@@ -99,13 +119,13 @@ export default function UploadPage() {
 
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4 gradient-text">AI Background Remover</h1>
+            <h1 className="text-4xl font-bold mb-4 gradient-text">AI Media Background Remover</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Upload your image and let our AI instantly remove the background with professional quality results
+              Upload your images or videos and let our AI instantly remove backgrounds with professional quality results
             </p>
           </div>
 
-          {!originalImage ? (
+          {!originalFile ? (
             <div className="max-w-2xl mx-auto">
               <div
                 className={`
@@ -122,13 +142,16 @@ export default function UploadPage() {
               >
                 <div className="space-y-8">
                   <div className="mx-auto w-24 h-24 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
-                    <Upload className="h-12 w-12 text-primary" />
+                    <div className="flex space-x-2">
+                      <ImageIcon className="h-8 w-8 text-primary" />
+                      <Video className="h-8 w-8 text-primary" />
+                    </div>
                   </div>
                   
                   <div className="space-y-4">
-                    <h3 className="text-2xl font-semibold">Drop your image here</h3>
+                    <h3 className="text-2xl font-semibold">Drop your media here</h3>
                     <p className="text-muted-foreground text-lg">
-                      or click to browse from your device
+                      Support for images and videos - or click to browse from your device
                     </p>
                   </div>
 
@@ -136,22 +159,34 @@ export default function UploadPage() {
                     size="lg"
                     className="gradient-primary text-white hover:opacity-90 transition-opacity px-8 py-6 text-lg"
                   >
-                    <ImageIcon className="mr-3 h-6 w-6" />
-                    Choose Image
+                    <Upload className="mr-3 h-6 w-6" />
+                    Choose Media File
                   </Button>
 
-                  <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
-                    <span className="bg-muted px-3 py-1 rounded-full">PNG</span>
-                    <span className="bg-muted px-3 py-1 rounded-full">JPG</span>
-                    <span className="bg-muted px-3 py-1 rounded-full">JPEG</span>
-                    <span className="bg-muted px-3 py-1 rounded-full">WebP</span>
+                  <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                    <div className="text-center">
+                      <p className="text-sm font-medium mb-2">Images</p>
+                      <div className="flex flex-wrap justify-center gap-2 text-xs text-muted-foreground">
+                        <span className="bg-muted px-2 py-1 rounded">PNG</span>
+                        <span className="bg-muted px-2 py-1 rounded">JPG</span>
+                        <span className="bg-muted px-2 py-1 rounded">WebP</span>
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-medium mb-2">Videos</p>
+                      <div className="flex flex-wrap justify-center gap-2 text-xs text-muted-foreground">
+                        <span className="bg-muted px-2 py-1 rounded">MP4</span>
+                        <span className="bg-muted px-2 py-1 rounded">MOV</span>
+                        <span className="bg-muted px-2 py-1 rounded">AVI</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="image/*"
+                  accept="image/*,video/*"
                   onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
                   className="hidden"
                 />
@@ -161,8 +196,15 @@ export default function UploadPage() {
             <div className="space-y-12">
               {/* File Info */}
               <div className="flex items-center justify-center space-x-4 p-4 bg-muted/30 rounded-2xl max-w-md mx-auto">
-                <ImageIcon className="h-5 w-5 text-primary" />
+                {fileType === 'image' ? (
+                  <ImageIcon className="h-5 w-5 text-primary" />
+                ) : (
+                  <Video className="h-5 w-5 text-primary" />
+                )}
                 <span className="font-medium truncate">{fileName}</span>
+                <div className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                  {fileType?.toUpperCase()}
+                </div>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -173,24 +215,44 @@ export default function UploadPage() {
                 </Button>
               </div>
 
-              {/* Image Comparison */}
+              {/* Media Comparison */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Original Image */}
+                {/* Original Media */}
                 <div className="space-y-6">
                   <div className="flex items-center justify-center space-x-2">
                     <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                     <h3 className="text-xl font-semibold">Original</h3>
                   </div>
                   <div className="relative rounded-3xl overflow-hidden bg-card border shadow-lg">
-                    <img 
-                      src={originalImage} 
-                      alt="Original" 
-                      className="w-full h-auto max-h-[500px] object-contain"
-                    />
+                    {fileType === 'image' ? (
+                      <img 
+                        src={originalFile} 
+                        alt="Original" 
+                        className="w-full h-auto max-h-[500px] object-contain"
+                      />
+                    ) : (
+                      <div className="relative">
+                        <video 
+                          ref={videoRef}
+                          src={originalFile} 
+                          className="w-full h-auto max-h-[500px] object-contain"
+                          controls={false}
+                          onPlay={() => setIsVideoPlaying(true)}
+                          onPause={() => setIsVideoPlaying(false)}
+                        />
+                        <Button
+                          onClick={toggleVideoPlayback}
+                          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full w-16 h-16 bg-black/50 hover:bg-black/70 transition-colors"
+                          size="lg"
+                        >
+                          {isVideoPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Processed Image */}
+                {/* Processed Media */}
                 <div className="space-y-6">
                   <div className="flex items-center justify-center space-x-2">
                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
@@ -206,23 +268,41 @@ export default function UploadPage() {
                           <div className="absolute inset-0 w-16 h-16 mx-auto rounded-full bg-primary/20 animate-ping"></div>
                         </div>
                         <div className="space-y-3">
-                          <p className="text-lg font-semibold">Processing your image...</p>
-                          <p className="text-muted-foreground">Our AI is working its magic</p>
+                          <p className="text-lg font-semibold">
+                            Processing your {fileType}...
+                          </p>
+                          <p className="text-muted-foreground">
+                            {fileType === 'video' 
+                              ? 'Processing frame-by-frame with AI' 
+                              : 'Our AI is working its magic'
+                            }
+                          </p>
                         </div>
                         <div className="w-64 bg-muted rounded-full h-2 mx-auto overflow-hidden">
                           <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full animate-pulse w-3/4"></div>
                         </div>
                       </div>
-                    ) : processedImage ? (
+                    ) : processedFile ? (
                       <>
-                        <img 
-                          src={processedImage} 
-                          alt="Processed" 
-                          className="w-full h-auto max-h-[500px] object-contain"
-                          style={{ 
-                            background: 'repeating-conic-gradient(#f1f5f9 0% 25%, #e2e8f0 0% 50%) 50% / 20px 20px' 
-                          }}
-                        />
+                        {fileType === 'image' ? (
+                          <img 
+                            src={processedFile} 
+                            alt="Processed" 
+                            className="w-full h-auto max-h-[500px] object-contain"
+                            style={{ 
+                              background: 'repeating-conic-gradient(#f1f5f9 0% 25%, #e2e8f0 0% 50%) 50% / 20px 20px' 
+                            }}
+                          />
+                        ) : (
+                          <video 
+                            src={processedFile} 
+                            className="w-full h-auto max-h-[500px] object-contain"
+                            controls
+                            style={{ 
+                              background: 'repeating-conic-gradient(#f1f5f9 0% 25%, #e2e8f0 0% 50%) 50% / 20px 20px' 
+                            }}
+                          />
+                        )}
                         <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1">
                           <CheckCircle className="h-4 w-4" />
                           <span>Complete</span>
@@ -234,15 +314,15 @@ export default function UploadPage() {
               </div>
 
               {/* Action Buttons */}
-              {processedImage && (
+              {processedFile && (
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
                   <Button 
-                    onClick={downloadImage}
+                    onClick={downloadFile}
                     size="lg"
                     className="gradient-primary text-white hover:opacity-90 transition-opacity px-8 py-6 text-lg"
                   >
                     <Download className="mr-3 h-6 w-6" />
-                    Download HD Image
+                    Download HD {fileType === 'video' ? 'Video' : 'Image'}
                   </Button>
                   
                   <Button 
@@ -251,7 +331,7 @@ export default function UploadPage() {
                     size="lg"
                     className="px-8 py-6 text-lg hover:bg-muted/50"
                   >
-                    Process Another Image
+                    Process Another File
                   </Button>
                 </div>
               )}
