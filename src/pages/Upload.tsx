@@ -103,16 +103,19 @@ export default function UploadPage() {
         body: formData,
       });
       
-      const data = await response.json();
-      
-      if (data.success) {
-        setProcessedFile(`data:image/png;base64,${data.image}`);
-        setSuccessMessage(data.message);
-      } else {
-        setError(data.error || 'Failed to remove background');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to remove background');
       }
+      
+      // Get the processed image as blob
+      const blob = await response.blob();
+      const imageUrl = URL.createObjectURL(blob);
+      
+      setProcessedFile(imageUrl);
+      setSuccessMessage('Background removed successfully!');
     } catch (err) {
-      setError('Network error. Please try again.');
+      setError(err instanceof Error ? err.message : 'Network error. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -133,7 +136,7 @@ export default function UploadPage() {
       
       const data = await response.json();
       
-      if (data.success) {
+      if (response.ok) {
         setProcessedFile(data.url);
         setSuccessMessage(data.message);
       } else {
