@@ -46,7 +46,7 @@ export default function UploadPage() {
     try {
       console.log('Processing file:', fileUrl);
       console.log('Is video:', isVideo);
-      console.log('Backend URL:', import.meta.env.VITE_BACKEND_URL || 'http://localhost:5002');
+      console.log('Backend URL:', import.meta.env.VITE_API_URL || 'http://localhost:5002');
 
       // Convert data URL to Blob
       const res = await fetch(fileUrl);
@@ -62,10 +62,10 @@ export default function UploadPage() {
         formData.append('method', processingMethod);
       }
 
-      console.log('Sending request to:', `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5002'}/removebg`);
+      console.log('Sending request to:', `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/removebg`);
 
       // Send to unified backend for background removal
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5002'}/removebg`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/removebg`, {
         method: 'POST',
         body: formData,
       });
@@ -99,7 +99,7 @@ export default function UploadPage() {
     formData.append('type', 'image');
     
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5002';
+      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
       const response = await fetch(`${backendUrl}/removebg`, {
         method: 'POST',
         body: formData,
@@ -132,7 +132,7 @@ export default function UploadPage() {
     formData.append('type', 'video');
     
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5002';
+      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
       const response = await fetch(`${backendUrl}/removebg`, {
         method: 'POST',
         body: formData,
