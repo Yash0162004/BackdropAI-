@@ -5,29 +5,20 @@ from flask import Flask, request, send_file, jsonify
 import io
 import os
 import tempfile
-import cv2
 import numpy as np
 from PIL import Image
 from rembg import remove, new_session
 from flask_cors import CORS
-import threading
-import time
-import uuid
-from dotenv import load_dotenv
 import requests
 
 app = Flask(__name__)
 CORS(app)
 
-load_dotenv()  # Loads variables from .env
-
-REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
-
 # Global session for better performance
 session = new_session("u2net")
 
 # Unscreen API configuration
-UNSCREEN_API_KEY = os.getenv("UNSCREEN_API_KEY", "G5NHkdN4A98gRnJPDDBMFtdQ")  # Use environment variable with fallback
+UNSCREEN_API_KEY = os.getenv("UNSCREEN_API_KEY")  # Use environment variable
 UNSCREEN_API_URL = "https://api.unscreen.com/v1.0/remove"
 
 def remove_bg_from_image(image):
