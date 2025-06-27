@@ -1,5 +1,5 @@
 # remove_bg_server.py
-# Flask server for background removal using advanced AI models for both images and videos
+# Lightweight Flask server for background removal using OpenCV
 
 from flask import Flask, request, send_file, jsonify
 import io
@@ -7,23 +7,68 @@ import os
 import tempfile
 import numpy as np
 from PIL import Image
-from rembg import remove, new_session
 from flask_cors import CORS
 import requests
+import gc
+import psutil
+import cv2
 
 app = Flask(__name__)
 CORS(app)
-
-# Global session for better performance
-session = new_session("u2net")
 
 # Unscreen API configuration
 UNSCREEN_API_KEY = os.getenv("UNSCREEN_API_KEY")  # Use environment variable
 UNSCREEN_API_URL = "https://api.unscreen.com/v1.0/remove"
 
-def remove_bg_from_image(image):
-    """Remove background from image with high accuracy"""
-    return remove(image, session=session, post_process_mask=True)
+def remove_bg_with_opencv(image):
+    """Remove background using OpenCV - lighter alternative to rembg"""
+    try:
+        # Convert PIL image to OpenCV format
+        img_array = np.array(image)
+        img_cv = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
+        
+        # Convert to RGBA if not already
+        if img_cv.shape[2] == 3:
+            img_cv = cv2.cvtColor(img_cv, cv2.COLOR_BGR2BGRA)
+        
+        # Create a mask using color-based segmentation
+        # Convert to HSV for better color segmentation
+        hsv = cv2.cvtColor(img_cv[:,:,:3], cv2.COLOR_BGR2HSV)
+        
+        # Create a mask for common background colors (white, light colors)
+        # This is a simple approach - for better results, use rembg
+        lower_light = np.array([0, 0, 200])  # Light colors
+        upper_light = np.array([180, 30, 255])
+        
+        mask = cv2.inRange(hsv, lower_light, upper_light)
+        mask = cv2.bitwise_not(mask)  # Invert to get foreground
+        
+        # Apply morphological operations to clean up the mask
+        kernel = np.ones((5,5), np.uint8)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+        
+        # Apply mask to image
+        img_cv[:, :, 3] = mask
+        
+        # Convert back to PIL
+        img_rgba = cv2.cvtColor(img_cv, cv2.COLOR_BGRA2RGBA)
+        result = Image.fromarray(img_rgba)
+        
+        # Force garbage collection
+        gc.collect()
+        
+        return result
+        
+    except Exception as e:
+        print(f"Error in remove_bg_with_opencv: {e}")
+        raise e
+
+def log_memory_usage():
+    """Log current memory usage"""
+    process = psutil.Process(os.getpid())
+    memory_info = process.memory_info()
+    print(f"Memory usage: {memory_info.rss / 1024 / 1024:.2f} MB")
 
 def remove_video_bg_with_unscreen(video_path):
     """Remove background from video using Unscreen API"""
@@ -94,6 +139,8 @@ def remove_video_bg_with_unscreen(video_path):
 @app.route('/removebg', methods=['POST'])
 def remove_bg_endpoint():
     try:
+        log_memory_usage()
+        
         if 'file' not in request.files:
             return jsonify({'error': 'No file uploaded'}), 400
         
@@ -102,22 +149,27 @@ def remove_bg_endpoint():
             return jsonify({'error': 'No file selected'}), 400
         
         file_type = request.form.get('type', 'image')
-        # method = request.form.get('method', 'local')  # No longer used
         
-        print(f"[API] Processing {file_type} (video always uses Unscreen API)")
+        print(f"[API] Processing {file_type}")
+        log_memory_usage()
         
         if file_type == 'image':
-            # Process image
+            # Process image with OpenCV (lighter alternative)
             try:
                 file.seek(0)
                 img = Image.open(file.stream)
-                output_img = remove_bg_from_image(img)
+                print(f"[API] Image size: {img.size}")
+                
+                output_img = remove_bg_with_opencv(img)
                 output = io.BytesIO()
                 output_img.save(output, format='PNG')
                 output.seek(0)
+                
+                log_memory_usage()
                 return send_file(output, mimetype='image/png')
             except Exception as e:
                 print(f"[API] Image processing error: {e}")
+                log_memory_usage()
                 return jsonify({'error': f'Image processing failed: {str(e)}'}), 500
         
         elif file_type == 'video':
@@ -128,8 +180,9 @@ def remove_bg_endpoint():
                 file.save(temp_video.name)
                 temp_video.close()
                 
-                print(f"[API] Processing video (video always uses Unscreen API)")
+                print(f"[API] Processing video")
                 print(f"[API] Saved video to: {temp_video.name}")
+                log_memory_usage()
                 
                 try:
                     # Try Unscreen API first
@@ -157,25 +210,22 @@ def remove_bg_endpoint():
             return jsonify({'error': f'Invalid file type: {file_type}'}), 400
     except Exception as e:
         print(f"[API] Unexpected error: {e}")
+        log_memory_usage()
         return jsonify({'error': f'Server error: {str(e)}'}), 500
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    return jsonify({'status': 'healthy', 'service': 'background-removal'})
+    return jsonify({'status': 'healthy', 'service': 'background-removal-opencv'})
 
 @app.route('/methods', methods=['GET'])
 def get_methods():
     return jsonify({
         'image': {
-            'method': 'local',
-            'description': 'Uses rembg library with U2Net model'
+            'method': 'opencv',
+            'description': 'Uses OpenCV for basic background removal (lighter alternative)'
         },
         'video': {
             'methods': {
-                'local': {
-                    'description': 'Frame-by-frame processing using local AI',
-                    'advantages': 'No API limits, works offline'
-                },
                 'api': {
                     'description': 'Uses Unscreen API for fast processing',
                     'advantages': 'Faster, higher quality, no local processing'
@@ -186,4 +236,13 @@ def get_methods():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5002))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    
+    # Log initial memory usage
+    print(f"Starting BackdropAI server (OpenCV version) on port {port}")
+    log_memory_usage()
+    
+    # Set environment variables for memory optimization
+    os.environ['OMP_NUM_THREADS'] = '1'  # Limit OpenMP threads
+    os.environ['MKL_NUM_THREADS'] = '1'  # Limit MKL threads
+    
+    app.run(host='0.0.0.0', port=port, debug=False, threaded=True)
