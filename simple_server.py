@@ -1,5 +1,5 @@
 # simple_server.py
-# Simple Flask server for testing deployment
+# Basic Flask server for testing deployment
 
 from flask import Flask, jsonify
 from flask_cors import CORS
@@ -15,6 +15,10 @@ def health_check():
 @app.route('/', methods=['GET'])
 def home():
     return jsonify({'message': 'BackdropAI Backend is running!'})
+
+@app.route('/test', methods=['GET'])
+def test():
+    return jsonify({'message': 'Test endpoint working!'})
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
