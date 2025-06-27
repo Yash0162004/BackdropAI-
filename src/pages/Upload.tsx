@@ -24,6 +24,7 @@ export default function UploadPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [selectedMethod, setSelectedMethod] = useState('simple');
 
   const handleFileSelect = useCallback((file: File) => {
     if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
@@ -96,6 +97,7 @@ export default function UploadPage() {
     
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('method', selectedMethod);
     
     try {
       const response = await fetch('/api/remove-bg', {
@@ -113,7 +115,7 @@ export default function UploadPage() {
       const imageUrl = URL.createObjectURL(blob);
       
       setProcessedFile(imageUrl);
-      setSuccessMessage('Background removed successfully!');
+      setSuccessMessage(`Background removed successfully using ${selectedMethod} method!`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Network error. Please try again.');
     } finally {
