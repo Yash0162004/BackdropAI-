@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { pipeline } from '@xenova/transformers';
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BACKEND_URL } from '@/config';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function UploadPage() {
@@ -47,7 +46,7 @@ export default function UploadPage() {
     try {
       console.log('Processing file:', fileUrl);
       console.log('Is video:', isVideo);
-      console.log('Backend URL:', BACKEND_URL);
+      console.log('Backend URL:', import.meta.env.VITE_BACKEND_URL || 'http://localhost:5002');
 
       // Convert data URL to Blob
       const res = await fetch(fileUrl);
@@ -63,10 +62,10 @@ export default function UploadPage() {
         formData.append('method', processingMethod);
       }
 
-      console.log('Sending request to:', `${BACKEND_URL}/removebg`);
+      console.log('Sending request to:', `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5002'}/removebg`);
 
       // Send to unified backend for background removal
-      const response = await fetch(`${BACKEND_URL}/removebg`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5002'}/removebg`, {
         method: 'POST',
         body: formData,
       });
@@ -97,10 +96,11 @@ export default function UploadPage() {
     
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('method', selectedMethod);
+    formData.append('type', 'image');
     
     try {
-      const response = await fetch('/api/remove-bg', {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5002';
+      const response = await fetch(`${backendUrl}/removebg`, {
         method: 'POST',
         body: formData,
       });
@@ -115,7 +115,7 @@ export default function UploadPage() {
       const imageUrl = URL.createObjectURL(blob);
       
       setProcessedFile(imageUrl);
-      setSuccessMessage(`Background removed successfully using ${selectedMethod} method!`);
+      setSuccessMessage('Background removed successfully!');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Network error. Please try again.');
     } finally {
@@ -129,9 +129,11 @@ export default function UploadPage() {
     
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('type', 'video');
     
     try {
-      const response = await fetch('/api/remove-video-bg', {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5002';
+      const response = await fetch(`${backendUrl}/removebg`, {
         method: 'POST',
         body: formData,
       });
