@@ -21,6 +21,9 @@ export default function UploadPage() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [processingMethod, setProcessingMethod] = useState<'auto' | 'api' | 'local'>('auto');
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleFileSelect = useCallback((file: File) => {
     if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
@@ -85,6 +88,62 @@ export default function UploadPage() {
       setProcessedFile(fileUrl);
     }
     setIsProcessing(false);
+  };
+
+  const handleImageUpload = async (file: File) => {
+    setLoading(true);
+    setError('');
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const response = await fetch('/api/remove-bg', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setProcessedFile(`data:image/png;base64,${data.image}`);
+        setSuccessMessage(data.message);
+      } else {
+        setError(data.error || 'Failed to remove background');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVideoUpload = async (file: File) => {
+    setLoading(true);
+    setError('');
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const response = await fetch('/api/remove-video-bg', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setProcessedFile(data.url);
+        setSuccessMessage(data.message);
+      } else {
+        setError(data.error || 'Failed to remove video background');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleUploadClick = () => {
