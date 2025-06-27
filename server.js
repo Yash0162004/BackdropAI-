@@ -1,10 +1,9 @@
 // server.js
-// Node.js Express server using Remove.bg API
+// Node.js Express server for BackdropAI
 
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
-const { removeBackgroundFromImageFile } = require('remove.bg');
 const path = require('path');
 const fs = require('fs');
 
@@ -28,47 +27,28 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy', 
     service: 'backdropai-backend',
-    provider: 'remove.bg'
+    message: 'BackdropAI server is running'
   });
 });
 
-// Background removal endpoint
+// Background removal endpoint (placeholder)
 app.post('/api/remove-bg', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const apiKey = process.env.REMOVE_BG_API_KEY;
-    if (!apiKey) {
-      return res.status(500).json({ error: 'Remove.bg API key not configured' });
-    }
-
-    const inputFile = req.file.path;
-    const outputFile = inputFile.replace('.', '_removed.');
-
     console.log(`Processing image: ${req.file.originalname}`);
 
-    // Remove background using Remove.bg
-    const result = await removeBackgroundFromImageFile({
-      path: inputFile,
-      apiKey: apiKey,
-      size: "regular",
-      type: "auto"
-    });
-
-    // Save the result
-    result.saveImage(outputFile);
-
-    // Read the processed image and send as response
-    const processedImage = fs.readFileSync(outputFile);
+    // For now, just return the original image
+    // This is a placeholder - you can implement local background removal here
+    const originalImage = fs.readFileSync(req.file.path);
     
-    // Clean up temporary files
-    fs.unlinkSync(inputFile);
-    fs.unlinkSync(outputFile);
+    // Clean up temporary file
+    fs.unlinkSync(req.file.path);
 
     res.setHeader('Content-Type', 'image/png');
-    res.send(processedImage);
+    res.send(originalImage);
 
   } catch (error) {
     console.error('Error processing image:', error);
@@ -79,7 +59,7 @@ app.post('/api/remove-bg', upload.single('file'), async (req, res) => {
     }
     
     res.status(500).json({ 
-      error: 'Failed to remove background',
+      error: 'Failed to process image',
       details: error.message 
     });
   }
