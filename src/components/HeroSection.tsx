@@ -86,7 +86,7 @@ export function HeroSection() {
               whileTap={{ scale: 0.95 }}
             >
               <Zap className="mr-2 h-4 w-4 text-blue-500" />
-              <span className="font-medium">Backfree - AI-Powered Media Background Removal</span>
+              <span className="font-medium">BackdropAI - AI-Powered Media Background Removal</span>
             </motion.div>
 
             {/* Heading */}

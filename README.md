@@ -1,6 +1,6 @@
-# Backfree - AI Background Removal Tool
+# BackdropAI - AI Background Removal Tool
 
-A powerful web application for removing backgrounds from both images and videos with high accuracy using advanced AI models.
+A modern SaaS application for AI-powered background removal from images and videos. Built with React, TypeScript, and Flask.
 
 ## Features
 
@@ -116,14 +116,14 @@ A powerful web application for removing backgrounds from both images and videos 
 
 3. **Set Environment Variables:**
    - In Vercel dashboard, add `REACT_APP_BACKEND_URL` with your backend URL
-   - Example: `https://backfree-backend.onrender.com`
+   - Example: `https://backdropai-backend.onrender.com`
 
 ### 🔧 Manual Deployment
 
 1. **Backend Deployment:**
    ```bash
    # For Heroku
-   heroku create backfree-backend
+   heroku create backdropai-backend
    heroku config:set UNSCREEN_API_KEY=your_key
    git push heroku main
    ```
@@ -164,3 +164,16 @@ This project is built with:
 For detailed setup instructions and troubleshooting, see [SETUP.md](./SETUP.md).
 
 For deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+
+## Backend Deployment (Render)
+
+1. **Create a new Web Service** on Render
+2. **Connect your GitHub repository**
+3. **Configure the service:**
+   - **Name**: `backdropai-backend`
+   - **Environment**: `Python 3`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `python remove_bg_server.py`
+4. **Add Environment Variables:**
+   - `UNSCREEN_API_KEY`: Your Unscreen API key
+5. **Deploy** and note the URL (e.g., `https://backdropai-backend.onrender.com`)

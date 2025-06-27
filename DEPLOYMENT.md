@@ -1,6 +1,6 @@
-# Deployment Guide - Backfree
+# Deployment Guide - BackdropAI
 
-This guide will help you deploy your Backfree background removal application to production.
+This guide will help you deploy your BackdropAI background removal application to production.
 
 ## Backend Deployment
 
@@ -10,7 +10,7 @@ This guide will help you deploy your Backfree background removal application to 
 2. **Create a new Web Service**
 3. **Connect your GitHub repository**
 4. **Configure the service:**
-   - **Name**: `backfree-backend`
+   - **Name**: `backdropai-backend`
    - **Environment**: `Python 3`
    - **Build Command**: `pip install -r requirements.txt`
    - **Start Command**: `gunicorn remove_bg_server:app --bind 0.0.0.0:$PORT`
@@ -20,7 +20,7 @@ This guide will help you deploy your Backfree background removal application to 
    - `UNSCREEN_API_KEY`: Your Unscreen API key
    - `REPLICATE_API_TOKEN`: Your Replicate API token (optional)
 
-6. **Deploy** and note the URL (e.g., `https://backfree-backend.onrender.com`)
+6. **Deploy** and note the URL (e.g., `https://backdropai-backend.onrender.com`)
 
 ### Option 2: Railway
 
@@ -71,7 +71,7 @@ This guide will help you deploy your Backfree background removal application to 
 2. **Set environment variables:**
    ```bash
    vercel env add REACT_APP_BACKEND_URL
-   # Enter your backend URL (e.g., https://backfree-backend.onrender.com)
+   # Enter your backend URL (e.g., https://backdropai-backend.onrender.com)
    ```
 
 3. **Deploy:**
@@ -90,14 +90,14 @@ This guide will help you deploy your Backfree background removal application to 
 Create a `.env.local` file in your project root:
 
 ```env
-REACT_APP_BACKEND_URL=https://backfree-backend.onrender.com
+REACT_APP_BACKEND_URL=https://backdropai-backend.onrender.com
 ```
 
 ## Testing Deployment
 
 1. **Test backend health:**
    ```
-   GET https://backfree-backend.onrender.com/health
+   GET https://backdropai-backend.onrender.com/health
    ```
 
 2. **Test frontend:**

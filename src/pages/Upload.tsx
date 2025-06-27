@@ -209,7 +209,7 @@ export default function UploadPage() {
                 className="text-center mb-12"
                 variants={itemVariants}
               >
-                <h1 className="text-4xl font-bold mb-4 gradient-text">Backfree - AI Media Background Remover</h1>
+                <h1 className="text-4xl font-bold mb-4 gradient-text">BackdropAI - AI Media Background Remover</h1>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                   Upload your images or videos and let our AI instantly remove backgrounds with professional quality results
                 </p>

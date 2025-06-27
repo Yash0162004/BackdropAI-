@@ -1,4 +1,4 @@
-# Backfree Troubleshooting Guide
+# BackdropAI Troubleshooting Guide
 
 ## 🚨 Frontend Not Working - Quick Fixes
 
