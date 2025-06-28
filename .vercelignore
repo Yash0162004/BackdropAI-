@@ -1,0 +1,47 @@
+# Python backend files (not needed for frontend)
+*.py
+requirements.txt
+pyproject.toml
+runtime.txt
+Procfile
+render.yaml
+.replit
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Backend specific files
+remove_bg_server.py
+video_bg_remover.py
+
+# Other files not needed for frontend
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.mp4
+*.mov
+*.avi
+.env.example
+DEPLOYMENT.md
+SETUP.md
+TROUBLESHOOTING.md
+deploy.sh
+
+node_modules
+.git
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+uploads/ 
