@@ -2,8 +2,6 @@ import { Button } from '@/components/ui/button';
 import { Upload, ArrowRight, Zap, Shield, Globe, Sparkles, Video, Camera } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import orignalImg from '/orignal.png';
-import bgremoveImg from '/bgremove.png';
 
 export function HeroSection() {
   const navigate = useNavigate();
@@ -179,7 +177,7 @@ export function HeroSection() {
                 >
                   <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-200" />
                   <div className="relative w-full h-full aspect-square rounded-2xl bg-card border border-border/50 p-6 backdrop-blur-sm flex items-center justify-center">
-                    <img src={orignalImg} alt="Original" className="w-full h-full object-cover rounded-xl" />
+                    <img src="/orignal.png" alt="Original" className="w-full h-full object-cover rounded-xl" />
                   </div>
                   <div className="absolute -top-3 left-4 bg-background border rounded-full px-3 py-1 text-sm font-medium shadow-sm">
                     Before
@@ -207,7 +205,7 @@ export function HeroSection() {
                 >
                   <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-200" />
                   <div className="relative w-full h-full aspect-square rounded-2xl bg-card border border-border/50 p-6 backdrop-blur-sm flex items-center justify-center">
-                    <img src={bgremoveImg} alt="Background Removed" className="w-full h-full object-cover rounded-xl" />
+                    <img src="/bgremove.png" alt="Background Removed" className="w-full h-full object-cover rounded-xl" />
                   </div>
                   <div className="absolute -top-3 left-4 bg-background border rounded-full px-3 py-1 text-sm font-medium shadow-sm">
                     After
