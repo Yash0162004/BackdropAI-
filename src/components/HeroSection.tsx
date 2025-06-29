@@ -2,8 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Upload, ArrowRight, Zap, Shield, Globe, Sparkles, Video, Camera } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import orignalImg from '../../orignal.png';
-import bgremoveImg from '../../bgremove.png';
+import orignalImg from '../../../orignal.png';
+import bgremoveImg from '../../../bgremove.png';
 
 export function HeroSection() {
   const navigate = useNavigate();
