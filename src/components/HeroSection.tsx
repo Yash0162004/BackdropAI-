@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import orignalImg from '../../orignal.png';
 import bgremoveImg from '../../bgremove.png';
-import { ShaderGradient } from "shadergradient";
 
 export function HeroSection() {
   const navigate = useNavigate();
@@ -57,22 +56,7 @@ export function HeroSection() {
 
   return (
     <section className="relative overflow-hidden">
-      {/* Shader Gradient Background */}
-      <div style={{ position: "absolute", inset: 0, zIndex: -1 }}>
-        <ShaderGradient
-          animate
-          mouse
-          brightness={1.2}
-          color1="#ff5005"
-          color2="#dbba95"
-          color3="#d0bce1"
-          uDensity={1.3}
-          uFrequency={5.5}
-          uSpeed={0.3}
-          uStrength={4}
-        />
-      </div>
-      {/* Background Pattern */}
+     
       <motion.div 
         className="absolute inset-0 bg-grid-black/[0.02] dark:bg-grid-white/[0.02]"
         initial={{ opacity: 0 }}
