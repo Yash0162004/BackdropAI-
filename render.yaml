@@ -3,10 +3,17 @@ services:
     name: backdropai-backend
     env: python
     pythonVersion: "3.11"
-    buildCommand: pip install -r requirements_render.txt
-    startCommand: uvicorn rembg_fastapi_backend:app --host 0.0.0.0 --port $PORT
+    buildCommand: |
+      pip install -r requirements.txt
+      mkdir -p .u2net
+      wget -O .u2net/u2net.pth https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net.pth
+    startCommand: uvicorn backend:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
       - key: U2NET_HOME
-        value: /opt/render/project/src/.u2net 
+        value: /opt/render/project/src/.u2net
+      - key: UNSCREEN_API_KEY
+        sync: false
+      - key: REPLICATE_API_TOKEN
+        sync: false 
