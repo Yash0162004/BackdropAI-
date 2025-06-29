@@ -6,4 +6,6 @@ opencv-python==4.10.0.84
 pillow
 numpy
 requests
-python-dotenv 
+python-dotenv
+onnxruntime==1.22.0
+onnxruntime-gpu==1.22.0 
