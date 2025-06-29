@@ -6,8 +6,9 @@ services:
     buildCommand: |
       pip install -r requirements.txt
       mkdir -p .u2net
-      wget -O .u2net/u2net.pth https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net.pth
-    startCommand: uvicorn backend:app --host 0.0.0.0 --port $PORT
+      wget -O .u2net/u2net.pth https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net.pth || echo "Failed to download model, will use local fallback"
+      ls -la .u2net/
+    startCommand: python -c "import backend; print('Backend imported successfully')" && uvicorn backend:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
