@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index";
 import Upload from "./pages/Upload";
 import NotFound from "./pages/NotFound";
+import ApiSuccess from "./pages/ApiSuccess";
 
 const App = () => (
   <ThemeProvider defaultTheme="dark" storageKey="detach-ui-theme">
@@ -14,6 +15,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/upload" element={<Upload />} />
+          <Route path="/api-success" element={<ApiSuccess />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

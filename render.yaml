@@ -3,8 +3,10 @@ services:
     name: backdropai-backend
     env: python
     pythonVersion: "3.11"
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn remove_bg_server:app --bind 0.0.0.0:$PORT
+    buildCommand: pip install -r requirements_render.txt
+    startCommand: uvicorn rembg_fastapi_backend:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.9 
+        value: 3.11.9
+      - key: U2NET_HOME
+        value: /opt/render/project/src/.u2net 

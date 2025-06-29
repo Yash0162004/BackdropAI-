@@ -2,6 +2,9 @@ import { Button } from '@/components/ui/button';
 import { Upload, ArrowRight, Zap, Shield, Globe, Sparkles, Video, Camera } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import orignalImg from '../../orignal.png';
+import bgremoveImg from '../../bgremove.png';
+import { ShaderGradient } from "shadergradient";
 
 export function HeroSection() {
   const navigate = useNavigate();
@@ -54,6 +57,21 @@ export function HeroSection() {
 
   return (
     <section className="relative overflow-hidden">
+      {/* Shader Gradient Background */}
+      <div style={{ position: "absolute", inset: 0, zIndex: -1 }}>
+        <ShaderGradient
+          animate
+          mouse
+          brightness={1.2}
+          color1="#ff5005"
+          color2="#dbba95"
+          color3="#d0bce1"
+          uDensity={1.3}
+          uFrequency={5.5}
+          uSpeed={0.3}
+          uStrength={4}
+        />
+      </div>
       {/* Background Pattern */}
       <motion.div 
         className="absolute inset-0 bg-grid-black/[0.02] dark:bg-grid-white/[0.02]"
@@ -168,66 +186,50 @@ export function HeroSection() {
               className="relative max-w-4xl mx-auto"
               variants={itemVariants}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-center gap-8 md:gap-x-10 relative">
                 {/* Before Card */}
                 <motion.div 
-                  className="group relative"
+                  className="group relative flex items-center justify-center aspect-square min-w-[440px] max-w-[480px] min-h-[440px] max-h-[480px] mx-auto"
                   variants={cardVariants}
                   whileHover="hover"
                 >
                   <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-200" />
-                  <div className="relative aspect-square rounded-2xl bg-card border border-border/50 p-6 backdrop-blur-sm">
-                    <div className="h-full w-full rounded-xl bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center">
-                      <div className="text-center space-y-2">
-                        <div className="w-16 h-16 mx-auto bg-muted-foreground/20 rounded-full flex items-center justify-center">
-                          <div className="flex space-x-1">
-                            <Camera className="w-6 h-6 text-muted-foreground" />
-                            <Video className="w-6 h-6 text-muted-foreground" />
-                          </div>
-                        </div>
-                        <p className="text-sm text-muted-foreground font-medium">Original Media</p>
-                      </div>
-                    </div>
+                  <div className="relative w-full h-full aspect-square rounded-2xl bg-card border border-border/50 p-6 backdrop-blur-sm flex items-center justify-center">
+                    <img src={orignalImg} alt="Original" className="w-full h-full object-cover rounded-xl" />
                   </div>
                   <div className="absolute -top-3 left-4 bg-background border rounded-full px-3 py-1 text-sm font-medium shadow-sm">
                     Before
                   </div>
                 </motion.div>
 
+                {/* Arrow */}
+                <motion.div 
+                  className="hidden md:flex items-center justify-center z-10"
+                  style={{ minWidth: '72px', minHeight: '72px' }}
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.8, duration: 0.5, ease: 'easeOut' }}
+                >
+                  <div className="w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg animate-pulse">
+                    <ArrowRight className="w-7 h-7" />
+                  </div>
+                </motion.div>
+
                 {/* After Card */}
                 <motion.div 
-                  className="group relative"
+                  className="group relative flex items-center justify-center aspect-square min-w-[440px] max-w-[480px] min-h-[440px] max-h-[480px] mx-auto"
                   variants={cardVariants}
                   whileHover="hover"
                 >
                   <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-200" />
-                  <div className="relative aspect-square rounded-2xl bg-card border border-border/50 p-6 backdrop-blur-sm">
-                    <div className="h-full w-full rounded-xl bg-transparent border-2 border-dashed border-primary/30 flex items-center justify-center">
-                      <div className="text-center space-y-2">
-                        <div className="w-16 h-16 mx-auto bg-primary/20 rounded-full flex items-center justify-center">
-                          <Sparkles className="w-8 h-8 text-primary" />
-                        </div>
-                        <p className="text-sm text-muted-foreground font-medium">Background Removed</p>
-                      </div>
-                    </div>
+                  <div className="relative w-full h-full aspect-square rounded-2xl bg-card border border-border/50 p-6 backdrop-blur-sm flex items-center justify-center">
+                    <img src={bgremoveImg} alt="Background Removed" className="w-full h-full object-cover rounded-xl" />
                   </div>
                   <div className="absolute -top-3 left-4 bg-background border rounded-full px-3 py-1 text-sm font-medium shadow-sm">
                     After
                   </div>
                 </motion.div>
               </div>
-
-              {/* Arrow */}
-              <motion.div 
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:block"
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ delay: 0.8, duration: 0.5, ease: "easeOut" }}
-              >
-                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg animate-pulse">
-                  <ArrowRight className="w-6 h-6" />
-                </div>
-              </motion.div>
             </motion.div>
           </div>
         </motion.div>

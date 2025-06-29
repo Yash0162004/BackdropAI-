@@ -42,49 +42,34 @@ export default function UploadPage() {
   const processFile = async (fileUrl: string, isVideo: boolean) => {
     setIsProcessing(true);
     setProcessedFile(null);
-
     try {
-      console.log('Processing file:', fileUrl);
-      console.log('Is video:', isVideo);
-      console.log('Backend URL:', import.meta.env.VITE_API_URL || 'http://localhost:5002');
-
       // Convert data URL to Blob
       const res = await fetch(fileUrl);
       const blob = await res.blob();
-      console.log('File blob size:', blob.size);
-
-      const formData = new FormData();
-      formData.append('file', blob, isVideo ? 'video.mp4' : 'image.png');
-      formData.append('type', isVideo ? 'video' : 'image');
       
-      // Add processing method for videos
       if (isVideo) {
-        formData.append('method', processingMethod);
-      }
-
-      console.log('Sending request to:', `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/removebg`);
-
-      // Send to unified backend for background removal
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/removebg`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-
-      if (response.ok) {
-        const resultBlob = await response.blob();
-        console.log('Result blob size:', resultBlob.size);
-        setProcessedFile(URL.createObjectURL(resultBlob));
+        // Create a File object from the blob for video processing
+        const file = new File([blob], 'video.mp4', { type: 'video/mp4' });
+        await handleVideoUpload(file);
       } else {
-        const errorText = await response.text();
-        console.error('Server error:', errorText);
-        throw new Error(`Server error: ${response.status} - ${errorText}`);
+        const formData = new FormData();
+        formData.append('file', blob, 'image.png');
+        const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const response = await fetch(`${backendUrl}/removebg`, {
+          method: 'POST',
+          body: formData,
+        });
+        if (response.ok) {
+          const resultBlob = await response.blob();
+          setProcessedFile(URL.createObjectURL(resultBlob));
+        } else {
+          const errorText = await response.text();
+          alert(`Server error: ${response.status} - ${errorText}`);
+          setProcessedFile(fileUrl);
+        }
       }
     } catch (error) {
-      console.error('Background removal error:', error);
-      alert(`Background removal failed: ${error.message}. See console for details.`);
+      alert(`Background removal failed: ${error instanceof Error ? error.message : error}`);
       setProcessedFile(fileUrl);
     }
     setIsProcessing(false);
@@ -99,7 +84,7 @@ export default function UploadPage() {
     formData.append('type', 'image');
     
     try {
-      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       const response = await fetch(`${backendUrl}/removebg`, {
         method: 'POST',
         body: formData,
@@ -126,28 +111,37 @@ export default function UploadPage() {
   const handleVideoUpload = async (file: File) => {
     setLoading(true);
     setError('');
+    setSuccessMessage('');
     
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('type', 'video');
     
     try {
-      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      console.log(`[Frontend] Sending video to: ${backendUrl}/removebg`);
+      setSuccessMessage('Processing video... This may take a few minutes for longer videos.');
+      
       const response = await fetch(`${backendUrl}/removebg`, {
         method: 'POST',
         body: formData,
       });
       
-      const data = await response.json();
-      
-      if (response.ok) {
-        setProcessedFile(data.url);
-        setSuccessMessage(data.message);
-      } else {
-        setError(data.error || 'Failed to remove video background');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to remove video background');
       }
+      
+      // Get the processed video as blob
+      const blob = await response.blob();
+      const videoUrl = URL.createObjectURL(blob);
+      
+      setProcessedFile(videoUrl);
+      setSuccessMessage('Video background removed successfully! Download ready.');
+      console.log('[Frontend] Video processing completed');
     } catch (err) {
-      setError('Network error. Please try again.');
+      console.error('[Frontend] Video processing error:', err);
+      setError(err instanceof Error ? err.message : 'Network error. Please try again.');
+      setSuccessMessage('');
     } finally {
       setLoading(false);
     }

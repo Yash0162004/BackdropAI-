@@ -1,16 +1,39 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from './ThemeToggle';
-import { Menu, X, Sparkles, LogOut } from 'lucide-react';
+import { Menu, X, LogOut, Sparkles } from 'lucide-react';
 import { SignInButton, UserButton, SignedIn, SignedOut, useClerk } from '@clerk/clerk-react';
 import { motion, AnimatePresence, easeOut, easeInOut } from 'framer-motion';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { signOut } = useClerk();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSignOut = () => {
     signOut();
+  };
+
+  const handleNavigation = (path: string) => {
+    if (location.pathname === '/') {
+      // If on home page, scroll to section
+      const element = document.getElementById(path.substring(1));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // If on other pages, navigate to home and then scroll
+      navigate('/');
+      setTimeout(() => {
+        const element = document.getElementById(path.substring(1));
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+    setIsMenuOpen(false);
   };
 
   const headerVariants = {
@@ -93,9 +116,10 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <motion.div 
-            className="flex items-center space-x-3"
+            className="flex items-center space-x-3 cursor-pointer"
             variants={logoVariants}
             whileHover="hover"
+            onClick={() => navigate('/')}
           >
             <motion.div 
               className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600"
@@ -111,38 +135,38 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <motion.a 
-              href="#features" 
+            <motion.button 
+              onClick={() => handleNavigation('#features')}
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               variants={navItemVariants}
               whileHover="hover"
             >
               Features
-            </motion.a>
-            <motion.a 
-              href="#pricing" 
+            </motion.button>
+            <motion.button 
+              onClick={() => handleNavigation('#pricing')}
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               variants={navItemVariants}
               whileHover="hover"
             >
               Pricing
-            </motion.a>
-            <motion.a 
-              href="#api" 
+            </motion.button>
+            <motion.button 
+              onClick={() => handleNavigation('#api')}
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               variants={navItemVariants}
               whileHover="hover"
             >
               API
-            </motion.a>
-            <motion.a 
-              href="#contact" 
+            </motion.button>
+            <motion.button 
+              onClick={() => handleNavigation('#contact')}
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               variants={navItemVariants}
               whileHover="hover"
             >
               Contact
-            </motion.a>
+            </motion.button>
             <SignedIn>
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
@@ -158,7 +182,7 @@ export function Header() {
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
+              transition={{ duration: 0.3 }}
             >
               <ThemeToggle />
             </motion.div>
@@ -243,42 +267,42 @@ export function Header() {
               exit="exit"
             >
               <nav className="container py-6 space-y-4">
-                <motion.a 
-                  href="#features" 
-                  className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                <motion.button 
+                  onClick={() => handleNavigation('#features')}
+                  className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors text-left w-full"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}
                 >
                   Features
-                </motion.a>
-                <motion.a 
-                  href="#pricing" 
-                  className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                </motion.button>
+                <motion.button 
+                  onClick={() => handleNavigation('#pricing')}
+                  className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors text-left w-full"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 }}
                 >
                   Pricing
-                </motion.a>
-                <motion.a 
-                  href="#api" 
-                  className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                </motion.button>
+                <motion.button 
+                  onClick={() => handleNavigation('#api')}
+                  className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors text-left w-full"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 }}
                 >
                   API
-                </motion.a>
-                <motion.a 
-                  href="#contact" 
-                  className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                </motion.button>
+                <motion.button 
+                  onClick={() => handleNavigation('#contact')}
+                  className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors text-left w-full"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
                 >
                   Contact
-                </motion.a>
+                </motion.button>
                 <div className="flex flex-col space-y-3 pt-4">
                   <SignedIn>
                     <motion.div

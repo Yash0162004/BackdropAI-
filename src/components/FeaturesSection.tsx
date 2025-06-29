@@ -1,4 +1,3 @@
-
 import { Upload, Download, Video, Palette, Layers, Zap } from 'lucide-react';
 
 export function FeaturesSection() {
@@ -31,7 +30,8 @@ export function FeaturesSection() {
     {
       icon: Video,
       title: 'Video Background Removal',
-      description: 'Frame-by-frame processing using MediaPipe and RVM for professional video editing.'
+      description: 'Frame-by-frame processing using MediaPipe and RVM for professional video editing.',
+      comingSoon: true
     },
     {
       icon: Palette,
@@ -39,19 +39,20 @@ export function FeaturesSection() {
       description: 'Replace backgrounds with solid colors, gradients, images, or even other videos.'
     },
     {
-      icon: Layers,
-      title: 'Batch Processing',
-      description: 'Process multiple images or videos simultaneously to save time and effort.'
-    },
-    {
       icon: Zap,
       title: 'Real-time Preview',
       description: 'See changes instantly with our real-time preview before downloading.'
+    },
+    {
+      icon: Layers,
+      title: 'Batch Uploads',
+      description: 'Upload and process multiple images at once for faster workflow.',
+      comingSoon: true
     }
   ];
 
   return (
-    <section className="py-20 lg:py-32">
+    <section id="features" className="py-20 lg:py-32">
       <div className="container">
         <div className="mx-auto max-w-2xl text-center mb-16">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
@@ -104,11 +105,14 @@ export function FeaturesSection() {
             const IconComponent = feature.icon;
             return (
               <div key={index} className="group">
-                <div className="glass-effect rounded-xl p-6 h-full transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                <div className="glass-effect rounded-xl p-6 h-full transition-all duration-300 hover:scale-105 hover:shadow-lg relative">
                   <div className="mb-4">
                     <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                       <IconComponent className="h-5 w-5 text-primary" />
                     </div>
+                    {feature.comingSoon && (
+                      <span className="absolute top-2 right-2 bg-muted text-xs text-muted-foreground px-2 py-1 rounded-full border border-border">Coming Soon</span>
+                    )}
                   </div>
                   <h4 className="text-lg font-semibold mb-3">{feature.title}</h4>
                   <p className="text-sm text-muted-foreground leading-relaxed">
