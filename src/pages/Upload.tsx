@@ -1,12 +1,13 @@
 import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/Header';
-import { Upload, Download, ArrowLeft, Loader2, Image as ImageIcon, CheckCircle, X, Video, Play, Pause, Settings } from 'lucide-react';
+import { Upload, Download, ArrowLeft, Loader2, Image as ImageIcon, CheckCircle, X, Video, Play, Pause, Settings, RotateCcw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { pipeline } from '@xenova/transformers';
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BACKEND_URL } from '@/config';
 
 export default function UploadPage() {
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ export default function UploadPage() {
       } else {
         const formData = new FormData();
         formData.append('file', blob, 'image.png');
-        const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const backendUrl = BACKEND_URL;
         const response = await fetch(`${backendUrl}/removebg`, {
           method: 'POST',
           body: formData,
@@ -84,7 +85,7 @@ export default function UploadPage() {
     formData.append('type', 'image');
     
     try {
-      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const backendUrl = BACKEND_URL;
       const response = await fetch(`${backendUrl}/removebg`, {
         method: 'POST',
         body: formData,
@@ -117,7 +118,7 @@ export default function UploadPage() {
     formData.append('file', file);
     
     try {
-      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const backendUrl = BACKEND_URL;
       console.log(`[Frontend] Sending video to: ${backendUrl}/removebg`);
       setSuccessMessage('Processing video... This may take a few minutes for longer videos.');
       
