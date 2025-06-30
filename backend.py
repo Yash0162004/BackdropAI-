@@ -32,7 +32,10 @@ video_jobs: Dict[str, Dict[str, Any]] = {}
 # Allow CORS for frontend dev
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://backdropai-frontend.vercel.app",  # Replace with your actual Vercel frontend URL
+        "http://localhost:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
