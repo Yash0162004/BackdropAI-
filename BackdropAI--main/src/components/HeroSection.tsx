@@ -1,0 +1,15 @@
+      {/* Shader Gradient Background */}
+-      <div style={{ position: "absolute", inset: 0, zIndex: -1 }}>
+-        <ShaderGradient
+-          animate
+-          mouse
+-          brightness={1.2}
+-          color1="#ff5005"
+-          color2="#dbba95"
+-          color3="#d0bce1"
+-          uDensity={1.3}
+-          uFrequency={5.5}
+-          uSpeed={0.3}
+-          uStrength={4}
+-        />
+-      </div> 

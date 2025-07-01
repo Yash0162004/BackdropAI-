@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: backdropai-backend
+    env: python
+    pythonVersion: "3.11"
+    buildCommand: |
+      pip install -r requirements.txt
+      mkdir -p .u2net
+      wget -O .u2net/u2net.pth https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net.pth || echo "Failed to download model, will use local fallback"
+      ls -la .u2net/
+    startCommand: python -c "import backend; print('Backend imported successfully')" && uvicorn backend:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: U2NET_HOME
+        value: /opt/render/project/src/.u2net
+      - key: UNSCREEN_API_KEY
+        sync: false
+      - key: REPLICATE_API_TOKEN
+        sync: false 
